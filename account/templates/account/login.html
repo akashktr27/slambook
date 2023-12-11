@@ -1,0 +1,23 @@
+{% extends 'account/base.html' %}
+{% load static %}
+
+
+{% block content %}
+  <h2>Login</h2>
+
+<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+
+    <!-- Left Column -->
+    <div class="w3-col m6">
+      <!-- Profile -->
+        <div class="w3-container">
+
+  <form method="post" action="{% url 'accounts:login' %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
