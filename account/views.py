@@ -28,14 +28,14 @@ class SignUpView(TemplateView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests here
         # You can access form data using request.POST
-        form_data = request.POST
+
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('account:login')
 
         else:
-            return self.get()
+            return self.get(request)
 
 
 def login_view(request):
@@ -52,7 +52,7 @@ def login_view(request):
                 login(request, user)
                 # Redirect to a success page or home page after successful login
                 print('Login success')
-                return redirect('home')
+                return redirect('post:home')
             else:
                 messages.error(request, 'Invalid email or password.')
 
@@ -65,5 +65,5 @@ def logout_view(request):
     # Logout the user
     logout(request)
     # Redirect to a specific page after logout
-    return redirect(reverse('post:home'))
+    return redirect(reverse('account:login'))
 

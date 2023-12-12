@@ -85,6 +85,7 @@ WSGI_APPLICATION = 'slambook.wsgi.application'
 # }
 # To use Neon with Django, you have to create a Project on Neon and specify the project connection settings in your settings.py in the same way as for standalone Postgres.
 
+# neon
 DATABASES = {
   'default': {
     'ENGINE': 'django.db.backends.postgresql',
@@ -92,6 +93,18 @@ DATABASES = {
     'USER': 'akash.kantrikar',
     'PASSWORD': '3xKLCG7HnqBk',
     'HOST': 'ep-hidden-smoke-82626408.ap-southeast-1.aws.neon.tech',
+    'PORT': '5432',
+    'OPTIONS': {'sslmode': 'require'},
+  }
+}
+# local
+DATABASES = {
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': 'slambook',
+    'USER': 'akash',
+    'PASSWORD': 'akash',
+    'HOST': 'localhost',
     'PORT': '5432',
     'OPTIONS': {'sslmode': 'require'},
   }

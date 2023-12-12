@@ -7,5 +7,6 @@ app_name = 'post'
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
+    path('search', search_view, name='search'),
     # path('', include('post.urls'))
 ]

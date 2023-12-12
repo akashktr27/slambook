@@ -8,7 +8,7 @@ from django.db.models import Q
 # Create your views here.
 
 class HomePageView(TemplateView):
-    template_name = 'post/base.html'
+    template_name = 'post/main.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,10 +33,13 @@ class HomePageView(TemplateView):
 
 def search_view(request):
     search_query = request.POST.get('search_query', '')
-
+    print(search_query)
     # Perform your search logic here using the search_query variable
     # For example, you might want to filter a queryset based on the search query
     search_result = CustomUser.objects.filter(Q(last_name__icontains=search_query)|Q(first_name__icontains=search_query))
-
+    context = {
+        'search_result': search_result,
+        'search_query': search_query,
+    }
     # Render the template with the search results
-    return render(request, 'post/search.html', {'search_result': search_result})
+    return render(request, 'post/search.html', context)

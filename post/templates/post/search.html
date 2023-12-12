@@ -1,0 +1,29 @@
+{% extends 'post/base.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<h3>Search results for <span class="badge bg-secondary">{{search_query}}</span></h3>
+<h3></h3>
+<div class="row">
+  {% for i in search_result %}
+  <div class="col-sm-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">{{i.first_name}} {{i.last_name}}</h2>
+        <p class="card-text">from: {{i.current_place}}</p>
+        <p class="card-text">Born: {{i.date_of_birth}}</p>
+        <p class="card-text">working as: {{i.working_as}}</p>
+        <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar">
+        <a href="#" class="btn btn-primary">Add Friend</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+</div>
+
+
+
+{% endblock %}

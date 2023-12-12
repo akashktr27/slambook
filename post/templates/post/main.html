@@ -1,6 +1,7 @@
+{% extends 'post/base.html' %}
 {% load static %}
+{% block content %}
 
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
   <!-- The Grid -->
   <div class="w3-row">
     <!-- Left Column -->
@@ -109,13 +110,15 @@
       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
         <img src="{{feed.user.profile_picture.url}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
         <span class="w3-right w3-opacity">{{feed.created_at}}</span>
-        <h4>{{feed.user}}</h4><br>
+        <h4>{{feed.user.first_name}}</h4>
         <hr class="w3-clear">
         <p>{{feed.content}}</p>
           <div class="w3-row-padding" style="margin:0 -16px">
+            {% if feed.image %}
             <div class="w3-half">
-              <img src="{% static 'images/no_image.jpg' %}" style="width:100%" alt="Northern Lights" class="w3-margin-bottom">
+              <img src="{{feed.image}}" style="width:100%" alt="Northern Lights" class="w3-margin-bottom">
             </div>
+            {% endif %}
         </div>
         <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
         <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
@@ -173,4 +176,6 @@
   </div>
 
 <!-- End Page Container -->
-</div>
+
+
+{% endblock %}

@@ -19,18 +19,21 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+default_picture = 'fb_no_image.jpg'
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
     current_place = models.CharField(max_length=30, blank=True)
     working_as = models.CharField(max_length=30, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', default=default_picture, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    # friends = models.ManyToManyField('self', symmetrical=True, related_name='user_friends', blank=True)
+    friends = models.ManyToManyField('self', symmetrical=True, related_name='user_friends', blank=True)
     # Add your custom fields here
 
     objects = CustomUserManager()
