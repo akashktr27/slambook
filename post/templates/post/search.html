@@ -1,10 +1,8 @@
 {% extends 'post/base.html' %}
 {% load static %}
-
-
 {% block content %}
 
-<h3>Search results for <span class="badge bg-secondary">{{search_query}}</span></h3>
+<h3>Search results for all <span class="badge bg-secondary">{{search_query}}</span></h3>
 <h3></h3>
 <div class="row">
   {% for i in search_result %}
@@ -15,8 +13,13 @@
         <p class="card-text">from: {{i.current_place}}</p>
         <p class="card-text">Born: {{i.date_of_birth}}</p>
         <p class="card-text">working as: {{i.working_as}}</p>
-        <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar">
-        <a href="#" class="btn btn-primary">Add Friend</a>
+        <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar" width="300" height="200">
+<!--        is_friend = current_user.friends.filter(username=random_user.username).exists()-->
+        <form action="{% url 'account:send_friend_request' i.email %}" method="post">
+        {% csrf_token %}
+          <button type="submit" class="btn btn-primary" id="request-button">Send Friend Request</button>
+        </form>
+
       </div>
     </div>
   </div>

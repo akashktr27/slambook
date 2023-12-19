@@ -13,6 +13,15 @@ class Post(models.Model):
     def __str__(self):
         return f'{self.user.email} - {self.created_at}'
 
+    @property
+    def imageURL(self):
+        try:
+            url = self.image.url
+        except:
+            url = ''
+        return url
+
+
     class Meta:
         ordering = ['-created_at']
 

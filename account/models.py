@@ -33,7 +33,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    friends = models.ManyToManyField('self', symmetrical=True, related_name='user_friends', blank=True)
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
     # Add your custom fields here
 
     objects = CustomUserManager()
@@ -52,4 +52,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             url = ''
         return url
 
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(CustomUser, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(CustomUser, related_name='to_user', on_delete=models.CASCADE)
+    is_accepted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.from_user} to {self.to_user}"
