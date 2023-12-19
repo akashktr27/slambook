@@ -19,18 +19,29 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
+default_picture = 'fb_no_image.jpg'
 class CustomUser(AbstractBaseUser, PermissionsMixin):
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    ]
+
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
     date_of_birth = models.DateField(blank=True, null=True)
     current_place = models.CharField(max_length=30, blank=True)
     working_as = models.CharField(max_length=30, blank=True)
-    profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pictures/', default=default_picture, blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
-    # friends = models.ManyToManyField('self', symmetrical=True, related_name='user_friends', blank=True)
+    friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    relationship_status = models.CharField(max_length=30, blank=True)
+    interested_in = models.CharField(max_length=30, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+
     # Add your custom fields here
 
     objects = CustomUserManager()
@@ -49,4 +60,11 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
             url = ''
         return url
 
+class FriendRequest(models.Model):
+    from_user = models.ForeignKey(CustomUser, related_name='from_user', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(CustomUser, related_name='to_user', on_delete=models.CASCADE)
+    is_accepted = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"{self.from_user} to {self.to_user}"

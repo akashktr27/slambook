@@ -1,5 +1,7 @@
 from django import forms
 from .models import CustomUser
+from django.contrib.auth.forms import UserChangeForm
+
 class SignUpForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
@@ -27,3 +29,8 @@ class SignUpForm(forms.Form):
 class LoginForm(forms.Form):
     email = forms.EmailField()
     password = forms.CharField(widget=forms.PasswordInput)
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = CustomUser
+        fields = ['email', 'first_name', 'last_name', 'date_of_birth', 'current_place', 'working_as', 'profile_picture', 'relationship_status', 'interested_in', 'gender']

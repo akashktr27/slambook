@@ -1,6 +1,30 @@
+{% extends 'post/base.html' %}
 {% load static %}
+{% block content %}
+<script>
+        $(document).ready(function () {
+            $('#like-form').on('submit', function (e) {
+                e.preventDefault(); // Prevent the default form submission
+                likePost();
+            });
 
-<div class="w3-container w3-content" style="max-width:1400px;margin-top:80px">
+            function likePost() {
+                $.ajax({
+                    type: 'POST',
+                    url: $('#like-form').attr('action'),
+                    data: $('#like-form').serialize(),
+                    success: function (data) {
+                        // Update the likes count and handle UI changes
+                        $('#likes-count').text('Likes: ' + data.likes);
+                        alert('Post liked successfully!');
+                    },
+                    error: function (error) {
+                        console.log('Error liking post');
+                    }
+                });
+            }
+        });
+    </script>
   <!-- The Grid -->
   <div class="w3-row">
     <!-- Left Column -->
@@ -9,9 +33,14 @@
       <div class="w3-card w3-round w3-white">
         <div class="w3-container">
 
-         <h4 class="w3-center">{{obj.first_name}}</h4>
-         <p class="w3-center"><img src="{{obj.profile_picture.url}}" class="w3-circle" style="height:106px;width:106px" alt="Avatar"></p>
-         <hr>
+         <h4 class="w3-center">
+    <a href="{% url 'account:profile' obj.id %}">{{ obj.first_name }}</a>
+</h4>
+<p class="w3-center">
+    <a href="{% url 'account:profile' obj.id %}">
+        <img src="{{ obj.profile_picture.url }}" class="w3-circle" style="height:106px;width:106px" alt="Avatar">
+    </a>
+</p>         <hr>
          <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i>{{obj.working_as}}</p>
          <p><i class="fa fa-home fa-fw w3-margin-right w3-text-theme"></i>{{obj.current_place}} </p>
          <p><i class="fa fa-birthday-cake fa-fw w3-margin-right w3-text-theme"></i>{{obj.date_of_birth}}</p>
@@ -99,8 +128,18 @@
           <div class="w3-card w3-round w3-white">
             <div class="w3-container w3-padding">
               <h6 class="w3-opacity">How do you feel today...?</h6>
-              <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>
-              <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>
+<!--              <form action="" method="POST">-->
+<!--              {% csrf_token %}-->
+<!--              <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>-->
+<!--              <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>-->
+<!--</form>-->
+              <form action="{% url 'post:home' %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <textarea name="content" class="w3-border w3-padding" placeholder="Status: Feeling Blue"></textarea>
+                <input type="file" name="image" accept="image/*" class="w3-border w3-padding">  <!-- Add an image upload field if needed -->
+                <button type="submit" class="w3-button w3-theme"><i class="fa fa-pencil"></i> Post</button>
+              </form>
+
             </div>
           </div>
         </div>
@@ -109,15 +148,24 @@
       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
         <img src="{{feed.user.profile_picture.url}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
         <span class="w3-right w3-opacity">{{feed.created_at}}</span>
-        <h4>{{feed.user}}</h4><br>
+        <h4>{{feed.user.first_name}}</h4>
         <hr class="w3-clear">
         <p>{{feed.content}}</p>
           <div class="w3-row-padding" style="margin:0 -16px">
+            {% if feed.image %}
             <div class="w3-half">
-              <img src="{% static 'images/no_image.jpg' %}" style="width:100%" alt="Northern Lights" class="w3-margin-bottom">
+              <img src="{{feed.image.url}}" style="width:100%" alt="Northern Lights" class="w3-margin-bottom">
             </div>
+            {% endif %}
         </div>
-        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>
+        <label>{{feed.likes.count}} Likes</label>
+        <form action="{% url 'post:like_post' feed.id %}" method="POST" id="like-form">
+        {% csrf_token %}
+        <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" id="like-button">
+  <i class="fa fa-thumbs-up"></i> Like
+</button>
+          </form>
+<!--        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>-->
         <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
       </div>
       {% endfor %}
@@ -141,19 +189,25 @@
       <br>
 
       <div class="w3-card w3-round w3-white w3-center">
+        <p>{{request_count}} Friend Request</p>
+
+        {% for request in frnd_requests %}
         <div class="w3-container">
-          <p>Friend Request</p>
-          <img src="{% static 'images/no_image.jpg' %}" alt="Avatar" style="width:50%"><br>
-          <span>Jane Doe</span>
+          <img src="{{request.from_user.profile_picture.url}}" alt="Avatar" style="width:50%"><br>
+          <span>{{request.from_user.first_name}} {{request.from_user.last_name}}</span>
           <div class="w3-row w3-opacity">
             <div class="w3-half">
-              <button class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button>
+              <form action="{% url 'account:accept_friend_request' request.id %}" method="post">
+              {% csrf_token %}
+                <button type="submit" class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button>
+              </form>
             </div>
             <div class="w3-half">
               <button class="w3-button w3-block w3-red w3-section" title="Decline"><i class="fa fa-remove"></i></button>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
       <br>
 
@@ -173,4 +227,6 @@
   </div>
 
 <!-- End Page Container -->
-</div>
+
+
+{% endblock %}

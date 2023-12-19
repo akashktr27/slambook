@@ -20,3 +20,23 @@ function openNav() {
     x.className = x.className.replace(" w3-show", "");
   }
 }
+
+//var updateBtns = document.getElementsById('btn btn-primary')
+
+//console.log('upd', updateBtns)
+
+//function handleClick(button) {
+//    // Change the label (text) of the button
+//    button.innerHTML = "Request sent";
+//
+//    // Get the URL from the button's data attribute
+//    var url = button.getAttribute("data-url");
+//    console.log(url)
+//    // Redirect to the specified URL
+//}
+
+
+// Assume that csrf_token is defined in your Django template and passed to this script
+
+
+

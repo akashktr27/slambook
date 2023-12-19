@@ -1,13 +1,17 @@
 from django.views.generic import TemplateView
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .forms import SignUpForm
+from .forms import SignUpForm, CustomUserChangeForm
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import LoginForm  # Create a login form in forms.py
 from django.contrib.auth import logout
 from django.urls import reverse
+from django.shortcuts import render, redirect, get_object_or_404
+from .models import CustomUser, FriendRequest
+
+
 # Create your views here.
 
 class SignUpView(TemplateView):
@@ -28,14 +32,14 @@ class SignUpView(TemplateView):
     def post(self, request, *args, **kwargs):
         # Handle POST requests here
         # You can access form data using request.POST
-        form_data = request.POST
+
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('account:login')
 
         else:
-            return self.get()
+            return self.get(request)
 
 
 def login_view(request):
@@ -52,7 +56,7 @@ def login_view(request):
                 login(request, user)
                 # Redirect to a success page or home page after successful login
                 print('Login success')
-                return redirect('home')
+                return redirect('post:home')
             else:
                 messages.error(request, 'Invalid email or password.')
 
@@ -65,5 +69,71 @@ def logout_view(request):
     # Logout the user
     logout(request)
     # Redirect to a specific page after logout
-    return redirect(reverse('post:home'))
+    return redirect(reverse('account:login'))
 
+
+def send_friend_request(request, to_username):
+    from_user = request.user
+    to_user = get_object_or_404(CustomUser, email=to_username)
+
+    # Check if a friend request already exists
+    existing_request = FriendRequest.objects.filter(from_user=from_user, to_user=to_user).first()
+    if existing_request:
+        print('Request already sent')
+        # Handle case where a request already exists (e.g., redirect to a profile page)
+        return JsonResponse({'request': 'already sent'})
+
+    # Create a new friend request
+    friend_request = FriendRequest(from_user=from_user, to_user=to_user)
+    friend_request.save()
+    print('Request added')
+    # Redirect to a page indicating that the friend request has been sent
+    return redirect('post:home')
+
+
+def friend_request_list(request):
+    current_user = request.user
+    received_requests = FriendRequest.objects.filter(to_user=current_user, is_accepted=False)
+    sent_requests = FriendRequest.objects.filter(from_user=current_user, is_accepted=False)
+
+    return render(request, 'friend_request_list.html',
+                  {'received_requests': received_requests, 'sent_requests': sent_requests})
+
+
+def accept_friend_request(request, request_id):
+    friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user, is_accepted=False)
+
+    # Accept the friend request
+    friend_request.is_accepted = True
+    friend_request.save()
+
+    # Add each user to the other's friends list
+    # friend_request.from_user.friends.add(request.user)
+    request.user.friends.add(friend_request.from_user)
+
+    return redirect('post:home')
+
+
+def profile(request, user_id):
+    # Assuming you have a CustomUser model
+    User = CustomUser()
+
+    # Get the user with the given ID or return a 404 if not found
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    # You can add more context data or perform additional logic here
+
+    return render(request, 'account/profile.html', {'user': user})
+
+def profile(request, user_id):
+    # User = get_user_model()
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+    else:
+        form = CustomUserChangeForm(instance=user)
+
+    return render(request, 'account/profile.html', {'user': user, 'form': form})
