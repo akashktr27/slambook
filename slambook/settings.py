@@ -40,9 +40,11 @@ INSTALLED_APPS = [
 
     #custom
     'post',
-    'account'
-]
+    'account',
+    # 'crispy_forms',
 
+]
+CRISPY_TEMPLATE_PACK = 'uni-form'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

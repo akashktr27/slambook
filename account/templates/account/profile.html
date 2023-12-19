@@ -1,0 +1,27 @@
+{% extends 'post/base.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <h1>{{ user.first_name }}'s Profile</h1>
+
+    <div class="row">
+      <div class="col-md-4">
+        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid">
+      </div>
+      <div class="col-md-8">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          {{ form}}
+
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Add a link back to the list of users or any other page as needed -->
+  </div>
+
+{% endblock %}

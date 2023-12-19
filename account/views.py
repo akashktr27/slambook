@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from .forms import SignUpForm
+from .forms import SignUpForm, CustomUserChangeForm
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -112,3 +112,28 @@ def accept_friend_request(request, request_id):
     request.user.friends.add(friend_request.from_user)
 
     return redirect('post:home')
+
+
+def profile(request, user_id):
+    # Assuming you have a CustomUser model
+    User = CustomUser()
+
+    # Get the user with the given ID or return a 404 if not found
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    # You can add more context data or perform additional logic here
+
+    return render(request, 'account/profile.html', {'user': user})
+
+def profile(request, user_id):
+    # User = get_user_model()
+    user = get_object_or_404(CustomUser, id=user_id)
+
+    if request.method == 'POST':
+        form = CustomUserChangeForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+    else:
+        form = CustomUserChangeForm(instance=user)
+
+    return render(request, 'account/profile.html', {'user': user, 'form': form})

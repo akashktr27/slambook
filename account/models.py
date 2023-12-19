@@ -21,7 +21,11 @@ class CustomUserManager(BaseUserManager):
 
 default_picture = 'fb_no_image.jpg'
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-
+    GENDER_CHOICES = [
+        ('Male', 'Male'),
+        ('Female', 'Female'),
+        ('Other', 'Other'),
+    ]
 
     email = models.EmailField(unique=True)
     first_name = models.CharField(max_length=30, blank=True)
@@ -34,6 +38,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     date_joined = models.DateTimeField(default=timezone.now)
     friends = models.ManyToManyField('self', symmetrical=True, blank=True)
+    relationship_status = models.CharField(max_length=30, blank=True)
+    interested_in = models.CharField(max_length=30, blank=True)
+    gender = models.CharField(max_length=10, choices=GENDER_CHOICES, blank=True)
+
     # Add your custom fields here
 
     objects = CustomUserManager()

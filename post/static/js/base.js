@@ -34,3 +34,9 @@ function openNav() {
 //    console.log(url)
 //    // Redirect to the specified URL
 //}
+
+
+// Assume that csrf_token is defined in your Django template and passed to this script
+
+
+

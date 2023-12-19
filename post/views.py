@@ -8,6 +8,7 @@ from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse
 from .form import PostForm
+from django.shortcuts import get_object_or_404
 # Create your views here.
 
 class LoginRequiredMixin:
@@ -35,7 +36,7 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         # to get feed
         friends = user.friends.all()
         feed_posts = Post.objects.filter(user__in=friends).order_by('-created_at')
-
+        obj = feed_posts[0]
         # to check received frnd req
         frnd_requests = FriendRequest.objects.filter(to_user=user, is_accepted=False)[:5]
 
@@ -80,3 +81,16 @@ def search_view(request):
     }
     # Render the template with the search results
     return render(request, 'post/search.html', context)
+
+
+def like_post(request, post_id):
+    if request.method == 'POST':
+        post = get_object_or_404(Post, id=post_id)
+
+        # Perform logic to handle the like, e.g., update the likes field in the Post model
+        post.likes.add(request.user)  # Assuming you have authentication and request.user is available
+        post.save()
+
+        # return JsonResponse({'message': 'Post liked successfully', 'likes': post.likes.count()})
+        return redirect("post:home")
+    return JsonResponse({'message': 'Invalid request'})
