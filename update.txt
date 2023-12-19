@@ -1,2 +1,0 @@
-{% static 'images/no_image.jpg' %}
-use profile_picture field to 
