@@ -115,17 +115,6 @@ def accept_friend_request(request, request_id):
 
 
 def profile(request, user_id):
-    # Assuming you have a CustomUser model
-    User = CustomUser()
-
-    # Get the user with the given ID or return a 404 if not found
-    user = get_object_or_404(CustomUser, id=user_id)
-
-    # You can add more context data or perform additional logic here
-
-    return render(request, 'account/profile.html', {'user': user})
-
-def profile(request, user_id):
     # User = get_user_model()
     user = get_object_or_404(CustomUser, id=user_id)
 
