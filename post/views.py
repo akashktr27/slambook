@@ -36,7 +36,6 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         # to get feed
         friends = user.friends.all()
         feed_posts = Post.objects.filter(user__in=friends).order_by('-created_at')
-        obj = feed_posts[0]
         # to check received frnd req
         frnd_requests = FriendRequest.objects.filter(to_user=user, is_accepted=False)[:5]
 
