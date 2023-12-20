@@ -9,6 +9,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from .form import PostForm
 from django.shortcuts import get_object_or_404
+from django.core.paginator import Paginator
 # Create your views here.
 
 class LoginRequiredMixin:
@@ -35,17 +36,25 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
         # to get feed
         friends = user.friends.all()
-        feed_posts = Post.objects.filter(user__in=friends).order_by('-created_at')
+        feed_posts = Post.objects.filter(Q(user=user) | Q(user__in=friends)).order_by('-created_at')
         # to check received frnd req
         frnd_requests = FriendRequest.objects.filter(to_user=user, is_accepted=False)[:5]
 
+        # add pagination
+        paginator = Paginator(feed_posts, 4)
+        page = self.request.GET.get('page')
+        print('page', page)
+        page_obj = paginator.get_page(page)
+
         context['frnd_requests'] = frnd_requests
         context['request_count'] = len(frnd_requests)
-        context['feeds'] = feed_posts
+        context['page_obj'] = page_obj
         return context
 
     def get(self, request, *args, **kwargs):
         # Handle GET requests here
+
+
         return render(request, self.template_name, self.get_context_data())
 
     def post(self, request, *args, **kwargs):

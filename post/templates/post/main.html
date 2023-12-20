@@ -146,7 +146,7 @@
           </div>
         </div>
       </div>
-      {% for feed in feeds %}
+      {% for feed in page_obj %}
       <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
         <img src="{{feed.user.profile_picture.url}}" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
         <span class="w3-right w3-opacity">{{feed.created_at}}</span>
@@ -172,11 +172,29 @@
       </div>
       {% endfor %}
 
+    	<div>
+		<div class="pagination">
+		<span class="step-links">
+			{% if page_obj.has_previous %}
+				<a href="?page=1">&laquo; first</a>
+				<a href="?page={{ page_obj.previous_page_number }}">previous</a>
+			{% endif %}
 
+			<span class="current">
+				Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+			</span>
+
+			{% if page_obj.has_next %}
+				<a href="?page={{ page_obj.next_page_number }}">next</a>
+				<a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+			{% endif %}
+		</span>
+	</div>
+	</div>
 
     <!-- End Middle Column -->
     </div>
-
+x
     <!-- Right Column -->
     <div class="w3-col m2">
       <div class="w3-card w3-round w3-white w3-center">
