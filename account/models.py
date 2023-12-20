@@ -19,7 +19,7 @@ class CustomUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-default_picture = 'fb_no_image.jpg'
+default_picture = 'no_image.jpg'
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     GENDER_CHOICES = [
         ('Male', 'Male'),

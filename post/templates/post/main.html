@@ -38,7 +38,9 @@
 </h4>
 <p class="w3-center">
     <a href="{% url 'account:profile' obj.id %}">
+
         <img src="{{ obj.profile_picture.url }}" class="w3-circle" style="height:106px;width:106px" alt="Avatar">
+
     </a>
 </p>         <hr>
          <p><i class="fa fa-pencil fa-fw w3-margin-right w3-text-theme"></i>{{obj.working_as}}</p>
