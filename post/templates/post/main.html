@@ -16,14 +16,38 @@
                     success: function (data) {
                         // Update the likes count and handle UI changes
                         $('#likes-count').text('Likes: ' + data.likes);
-                        alert('Post liked successfully!');
+                        toggleLikeButtonIcon();
                     },
                     error: function (error) {
                         console.log('Error liking post');
                     }
                 });
             }
+
+            // Function to toggle thumbs-up and thumbs-down icons on the button
+            function toggleLikeButtonIcon() {
+                var likeButton = $('#like-button');
+                var currentIcon = likeButton.find('i');
+
+                // Toggle between thumbs-up and thumbs-down icons
+                if (currentIcon.hasClass('fa-thumbs-up')) {
+                    currentIcon.removeClass('fa-thumbs-up').addClass('fa-thumbs-down');
+                    likeButton.text(' Unlike');  // Change the button text
+                } else {
+                    currentIcon.removeClass('fa-thumbs-down').addClass('fa-thumbs-up');
+                    likeButton.text(' Like');  // Change the button text
+                }
+            }
         });
+
+        function redirectToProfile() {
+        // Use Django's url template tag to get the actual URL
+        var profileUrl = "{% url 'account:show_profile' obj.id %}";
+
+        // Redirect to the obtained URL
+        window.location.href = profileUrl;
+      }
+
     </script>
   <!-- The Grid -->
   <div class="w3-row">
@@ -59,9 +83,9 @@
           </div>
           <button onclick="myFunction('Demo2')" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-calendar-check-o fa-fw w3-margin-right"></i> My Events</button>
           <div id="Demo2" class="w3-hide w3-container">
-            <p>Some other text..</p>
+            <p>Some other text...</p>
           </div>
-          <button onclick="myFunction('Demo3')" class="w3-button w3-block w3-theme-l1 w3-left-align"><i class="fa fa-users fa-fw w3-margin-right"></i> My Photos</button>
+          <button class="w3-button w3-block w3-theme-l1 w3-left-align" onclick="redirectToProfile()"><i class="fa fa-users fa-fw w3-margin-right"></i> My Photos</button>
           <div id="Demo3" class="w3-hide w3-container">
          <div class="w3-row-padding">
          <br>
@@ -130,11 +154,6 @@
           <div class="w3-card w3-round w3-white">
             <div class="w3-container w3-padding">
               <h6 class="w3-opacity">How do you feel today...?</h6>
-<!--              <form action="" method="POST">-->
-<!--              {% csrf_token %}-->
-<!--              <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>-->
-<!--              <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>-->
-<!--</form>-->
               <form action="{% url 'post:home' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 <textarea name="content" class="w3-border w3-padding" placeholder="Status: Feeling Blue"></textarea>
@@ -160,16 +179,17 @@
             </div>
             {% endif %}
         </div>
-        <label>{{feed.likes.count}} Likes</label>
-        <form action="{% url 'post:like_post' feed.id %}" method="POST" id="like-form">
-        {% csrf_token %}
-        <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" id="like-button">
-  <i class="fa fa-thumbs-up"></i> Like
-</button>
-          </form>
-<!--        <button type="button" class="w3-button w3-theme-d1 w3-margin-bottom"><i class="fa fa-thumbs-up"></i>  Like</button>-->
-        <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
-      </div>
+          <div class="like">
+            <span id="likes-count">Likes: {{feed.likes.count}}</span>
+            <form action="{% url 'post:like_post' feed.id %}" method="POST" id="like-form">
+                {% csrf_token %}
+                <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" id="like-button">
+                <i class="fa fa-thumbs-up"></i> Like
+                </button>
+            </form>
+                <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
+            </div>
+          </div>
       {% endfor %}
 
     	<div>

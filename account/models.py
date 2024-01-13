@@ -68,3 +68,14 @@ class FriendRequest(models.Model):
 
     def __str__(self):
         return f"{self.from_user} to {self.to_user}"
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    notification_type = models.CharField(max_length=255)
+    is_viewed = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.notification_type} to {self.user}"
+

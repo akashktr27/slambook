@@ -5,22 +5,44 @@
 <h3>Search results for all <span class="badge bg-secondary">{{search_query}}</span></h3>
 <h3></h3>
 <div class="row">
-  {% for i in search_result %}
+  {% for i in friend_users %}
   <div class="col-sm-4">
     <div class="card">
       <div class="card-body">
         <h2 class="card-title">{{i.first_name}} {{i.last_name}}</h2>
 
-        <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar" width="300" height="200">
-<!--        is_friend = current_user.friends.filter(username=random_user.username).exists()-->
-        <p class="card-text">from: {{i.current_place}}</p>
-        <p class="card-text">Born: {{i.date_of_birth}}</p>
-        <p class="card-text">working as: {{i.working_as}}</p>
-        <p class="card-text">working as: {{i.relationship_status}}</p>
+          <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar" width="300" height="200">
+            <p class="card-text">from: {{i.current_place}}</p>
+            <p class="card-text">Born: {{i.date_of_birth}}</p>
+            <p class="card-text">working as: {{i.working_as}}</p>
+            <p class="card-text">working as: {{i.relationship_status}}</p>
 
         <form action="{% url 'account:send_friend_request' i.email %}" method="post">
         {% csrf_token %}
-          <button type="submit" class="btn btn-primary" id="request-button">Send Friend Request</button>
+          <button type="submit" class="btn btn-primary" id="request-button">Unfriend</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+<!--  non- friends -->
+  {% for i in non_friend_users %}
+  <div class="col-sm-4">
+    <div class="card">
+      <div class="card-body">
+        <h2 class="card-title">{{i.first_name}} {{i.last_name}}</h2>
+
+          <img src="{{i.profile_picture.url}}" class="img-thumbnail" alt="avatar" width="300" height="200">
+            <p class="card-text">from: {{i.current_place}}</p>
+            <p class="card-text">Born: {{i.date_of_birth}}</p>
+            <p class="card-text">working as: {{i.working_as}}</p>
+            <p class="card-text">working as: {{i.relationship_status}}</p>
+
+        <form action="{% url 'account:send_friend_request' i.email %}" method="post">
+        {% csrf_token %}
+          <button type="submit" class="btn btn-primary" id="">Send friend request</button>
         </form>
 
       </div>

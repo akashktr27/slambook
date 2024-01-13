@@ -1,0 +1,58 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% block content %}
+<script>
+        var markAsReadUrl = "{% url 'account:mark_asread' %}";
+    </script>
+<div class="container mt-4">
+    <div class="row">
+
+        <div class="col-lg-6">
+            <p>{{ frnd_requests.count }} Friend request received</p>
+            <div class="notification w3-card w3-round w3-white w3-center">
+
+              <div class="w3-card w3-round w3-white w3-center">
+                <p>{{request_count}} Friend Request</p>
+
+
+                {% for request in frnd_requests %}
+                <div class="w3-container">
+                  <img src="{{request.from_user.profile_picture.url}}" alt="Avatar" style="width:50%"><br>
+                  <span>{{request.from_user.first_name}} {{request.from_user.last_name}}</span>
+                  <div class="w3-row w3-opacity">
+                    <div class="w3-half">
+                      <form action="{% url 'account:accept_friend_request' request.id %}" method="post">
+                      {% csrf_token %}
+                        <button type="submit" class="w3-button w3-block w3-green w3-section" title="Accept"><i class="fa fa-check"></i></button>
+                      </form>
+                    </div>
+                    <div class="w3-half">
+                      <button class="w3-button w3-block w3-red w3-section" title="Decline"><i class="fa fa-remove"></i></button>
+                    </div>
+                  </div>
+                </div>
+
+                {% endfor %}
+              </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <p>Notifications</p>
+
+                <ul class="list-group">
+                    {% for i in post_likes %}
+                        <li class="list-group-item">{{i.user.first_name}} liked your post</li>
+                    {% endfor %}
+                </ul>
+
+        </div>
+
+        <div class="col-lg-2">
+            {% if post_likes %}
+        <button type="button" class="btn btn-success" id="markAllReadBtn">Mark all as read</button>
+            {% endif %}
+        </div>
+</div>
+
+{% endblock %}

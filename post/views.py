@@ -1,8 +1,7 @@
-from django.shortcuts import render
 from django.views.generic import TemplateView
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-from account.models import CustomUser, FriendRequest
+from account.models import CustomUser, FriendRequest, Notification
 from post.models import Post
 from django.db.models import Q
 from django.shortcuts import redirect
@@ -40,21 +39,21 @@ class HomePageView(LoginRequiredMixin, TemplateView):
         # to check received frnd req
         frnd_requests = FriendRequest.objects.filter(to_user=user, is_accepted=False)[:5]
 
+        # noti
+        notification_count = Notification.objects.filter(user=self.request.user, is_viewed=False).count()
         # add pagination
         paginator = Paginator(feed_posts, 4)
         page = self.request.GET.get('page')
-        print('page', page)
         page_obj = paginator.get_page(page)
 
         context['frnd_requests'] = frnd_requests
         context['request_count'] = len(frnd_requests)
         context['page_obj'] = page_obj
+        context['notification_count'] = notification_count
         return context
 
     def get(self, request, *args, **kwargs):
         # Handle GET requests here
-
-
         return render(request, self.template_name, self.get_context_data())
 
     def post(self, request, *args, **kwargs):
@@ -76,16 +75,25 @@ class HomePageView(LoginRequiredMixin, TemplateView):
 
 def search_view(request):
     search_query = request.POST.get('search_query', '')
-    print(search_query)
+    current_user = request.user
     # Perform your search logic here using the search_query variable
     # For example, you might want to filter a queryset based on the search query
     if search_query:
-        search_result = CustomUser.objects.filter(Q(last_name__icontains=search_query)|Q(first_name__icontains=search_query))
+        # Query for friends
+        friend_users = current_user.friends.filter(
+            Q(last_name__icontains=search_query) | Q(first_name__icontains=search_query))
+
+        # Query for non-friends
+        non_friend_users = CustomUser.objects.filter(
+            Q(last_name__icontains=search_query) | Q(first_name__icontains=search_query)).exclude(
+            id__in=friend_users.values('id'))
+
     else:
         search_result = {}
     context = {
-        'search_result': search_result,
         'search_query': search_query,
+        'friend_users': friend_users,
+        'non_friend_users': non_friend_users,
     }
     # Render the template with the search results
     return render(request, 'post/search.html', context)
@@ -98,7 +106,11 @@ def like_post(request, post_id):
         # Perform logic to handle the like, e.g., update the likes field in the Post model
         post.likes.add(request.user)  # Assuming you have authentication and request.user is available
         post.save()
+        print()
+        Notification.objects.create(
+            user=post.user,
+            notification_type='post_like',
+        )
 
-        # return JsonResponse({'message': 'Post liked successfully', 'likes': post.likes.count()})
-        return redirect("post:home")
+        return JsonResponse({'likes':post.likes.count()})
     return JsonResponse({'message': 'Invalid request'})
