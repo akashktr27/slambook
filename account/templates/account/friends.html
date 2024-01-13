@@ -1,0 +1,23 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        {% for friend in friends %}
+        <div class="col-lg-4">
+
+            <div class="card" style="width: 18rem;">
+              <img src="{{friend.profile_picture.url}}" class="card-img-top" alt="..." style="width: 200px; height:200px">
+              <div class="card-body">
+                <h5 class="card-title">{{friend.first_name}} {{friend.last_name}}</h5>
+                <a href="#" class="btn btn-primary">Check Profile</a>
+              </div>
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

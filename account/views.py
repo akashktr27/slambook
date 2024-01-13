@@ -3,14 +3,14 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from .forms import SignUpForm, CustomUserChangeForm
 from django.contrib.auth import authenticate, login
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import LoginForm  # Create a login form in forms.py
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CustomUser, FriendRequest
-
+from .models import CustomUser, FriendRequest, Notification
+from post.models import Post
 
 # Create your views here.
 
@@ -111,19 +111,11 @@ def accept_friend_request(request, request_id):
     # friend_request.from_user.friends.add(request.user)
     request.user.friends.add(friend_request.from_user)
 
-    return redirect('post:home')
+    # mark notification as seen
+    Notification.objects.filter(user=request.user).update(is_viewed=True)
 
+    return JsonResponse({"status": "request accepted"})
 
-def profile(request, user_id):
-    # Assuming you have a CustomUser model
-    User = CustomUser()
-
-    # Get the user with the given ID or return a 404 if not found
-    user = get_object_or_404(CustomUser, id=user_id)
-
-    # You can add more context data or perform additional logic here
-
-    return render(request, 'account/profile.html', {'user': user})
 
 def profile(request, user_id):
     # User = get_user_model()
@@ -137,3 +129,41 @@ def profile(request, user_id):
         form = CustomUserChangeForm(instance=user)
 
     return render(request, 'account/profile.html', {'user': user, 'form': form})
+
+def notifications(request):
+    post_likes = Notification.objects.filter(user=request.user, notification_type='post_like', is_viewed=False)
+    frnd_requests = FriendRequest.objects.filter(to_user=request.user, is_accepted=False)
+    context = {
+        'post_likes': post_likes,
+        'frnd_requests' : frnd_requests
+    }
+    # unread_notifications.update(is_viewed=True)
+    return render(request, 'account/notification.html', context)
+
+def mark_asread(request):
+    Notification.objects.filter(user=request.user).update(is_viewed=True)
+
+    return JsonResponse({"status": "success"})
+
+
+def show_profile(request, user_id):
+    print('ise', user_id)
+    user = get_object_or_404(CustomUser, id=user_id)
+    image_data = Post.objects.filter(user=user).exclude(image='')
+
+
+    context = {
+        "pictures": image_data
+    }
+    return render(request, 'account/show_profile.html', context)
+
+
+@login_required
+def get_friends(request):
+    user_profile = get_object_or_404(CustomUser, id=request.user.id)
+    friends = user_profile.friends.all()
+
+    context = {
+        "friends" : friends
+    }
+    return render(request, "account/friends.html", context)
