@@ -132,28 +132,14 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
-
-
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 import os
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-# MEDIA_URL = 'media/'
-MEDIA_URL = 'images/'
+# MEDIA_URL = 'static/images/' online
+# MEDIA_URL = 'images/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 AUTH_USER_MODEL = 'account.CustomUser'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = 'static/'
-
-
-# MEDIA_URL = 'static/images/'
-
-# MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')

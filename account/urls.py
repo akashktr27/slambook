@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import (SignUpView, login_view, logout_view, send_friend_request, accept_friend_request,
-                    profile, notifications, show_profile, mark_asread, get_friends)
+                    profile, notifications, show_profile, mark_asread, get_friends, send_message,
+                    chat, conversation_history)
 
 app_name = 'account'
 
@@ -15,4 +16,9 @@ urlpatterns = [
     path('notification/', notifications, name='notification'),
     path('mark_asread/', mark_asread, name='mark_asread'),
     path('get_friends/', get_friends, name='get_friends'),
+    path('chat_all/', chat, name='chat_all'),
+
+    path('chat/<int:friend_id>/', chat, name='chat'),
+    path('send_message/<int:friend_id>/', send_message, name='send_message'),
+    path('conversation_history/<int:friend_id>/', conversation_history, name='conversation_history'),
 ]

@@ -1,0 +1,62 @@
+{% extends 'post/base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-3 custom-margin">
+            <div class="container mt-3">
+                <div class="row justify-content-center">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search...">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">Search</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row justify-content-left">
+                <table class="table custom-table" style="border: 1px solid #343a40;">
+                    <tbody>
+                        {% for friend in friends %}
+                            <tr>
+                                <td style="border: 1px solid #343a40;"><a style="text-decoration: none; color: #007bff;" href="{% url 'account:chat' friend.id %}">{{ friend.first_name }} {{ friend.last_name }}</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+        <div class="col-md-9 custom-margin">
+            <div class="container mt-3">
+                <div class="row justify-content-left">
+                    <div class="col-md-6">
+                        <!-- Display conversation messages here -->
+
+                        <h2 class="display-6">Messages</h2>
+                        <p class="bg-primary text-white p-3" style="bg-custom-color;background-color: #4D636F !important;">Conversation with {{ active_friend.first_name }}</p>
+                        <div>
+                            {% for message in messages %}
+                            <p>{{message.content}}</p>
+                            {% endfor %}
+                        </div>
+                        <!-- Form for sending messages -->
+                        <form method="post" action="{% url 'account:send_message' active_friend.id %}">
+                            {% csrf_token %}
+                            <input type="text" hidden name="friend_id" value="{{ active_chat}}">
+                            <textarea name="content" id="id_content" cols="50" rows="2"></textarea>
+                            <button type="submit">Send</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
+{% endblock %}

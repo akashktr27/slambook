@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
-from .forms import SignUpForm, CustomUserChangeForm
+from django.db.models.query_utils import Q
+from .forms import SignUpForm, CustomUserChangeForm, MessageForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -9,9 +9,9 @@ from .forms import LoginForm  # Create a login form in forms.py
 from django.contrib.auth import logout
 from django.urls import reverse
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import CustomUser, FriendRequest, Notification
+from .models import CustomUser, FriendRequest, Notification, Message
 from post.models import Post
-
+from django.contrib.auth import get_user_model
 # Create your views here.
 
 class SignUpView(TemplateView):
@@ -167,3 +167,68 @@ def get_friends(request):
         "friends" : friends
     }
     return render(request, "account/friends.html", context)
+
+
+def send_message(request, friend_id):
+    friend = get_user_model().objects.get(pk=friend_id)
+
+    if request.method == 'POST':
+        form = MessageForm(request.POST)
+        print(form.is_valid())
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.sender = request.user
+            message.receiver = friend
+            message.save()
+            return redirect('account:chat', friend_id=friend.id)
+    else:
+        form = MessageForm()
+
+    return redirect('account:chat', friend_id=friend.id)
+
+def conversation_history(request, friend_id):
+    friend = get_user_model().objects.get(pk=friend_id)
+    from django.contrib.auth import models
+    messages = Message.objects.filter(
+        (models.Q(sender=request.user, receiver=friend) | models.Q(sender=friend, receiver=request.user))
+    ).order_by('timestamp')
+
+    context = {
+        'friend': friend,
+        'messages': messages,
+    }
+    return render(request, 'conversation_history.html', context)
+
+def chat(request, friend_id=None):
+    user_profile = get_object_or_404(CustomUser, id=request.user.id)
+
+    # acive chat
+    if not friend_id:
+        try:
+            active_chat = Message.objects.filter(sender=user_profile)[0]
+            friend_profile = active_chat.receiver
+            active_friend = active_chat.receiver.id
+        except:
+            active_chat = {}
+
+    else:
+        active_friend = friend_id
+        friend_profile = get_object_or_404(CustomUser, id=friend_id)
+        active_chat = Message.objects.filter(sender=user_profile, receiver=friend_id)
+
+    friends = user_profile.friends.all().order_by('id')
+
+    # send msg
+    form = MessageForm()
+
+    messages = Message.objects.filter(
+        (Q(sender=request.user, receiver=active_friend) | Q(sender=active_friend, receiver=request.user))
+    ).order_by('timestamp')
+    context = {
+        'active_friend': friend_profile,
+        'friends': friends,
+        'form': form,
+        'messages':messages
+    }
+
+    return render(request, "account/chat.html", context)
