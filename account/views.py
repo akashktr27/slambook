@@ -205,25 +205,24 @@ def chat(request, friend_id=None):
     # acive chat
     if not friend_id:
         try:
-            active_chat = Message.objects.filter(sender=user_profile)[0]
-            friend_profile = active_chat.receiver
-            active_friend = active_chat.receiver.id
+            friends = user_profile.friends.all().order_by('id')
         except:
-            active_chat = {}
+            friends = []
+        active_friend, messages, friend_profile = [], [], []
 
     else:
         active_friend = friend_id
         friend_profile = get_object_or_404(CustomUser, id=friend_id)
-        active_chat = Message.objects.filter(sender=user_profile, receiver=friend_id)
-
-    friends = user_profile.friends.all().order_by('id')
+        try:
+            messages = Message.objects.filter(
+                (Q(sender=request.user, receiver=active_friend) | Q(sender=active_friend, receiver=request.user))
+            ).order_by('-timestamp')[:6]
+        except:
+            messages = {}
+        friends = user_profile.friends.all().order_by('id')
 
     # send msg
     form = MessageForm()
-
-    messages = Message.objects.filter(
-        (Q(sender=request.user, receiver=active_friend) | Q(sender=active_friend, receiver=request.user))
-    ).order_by('timestamp')
     context = {
         'active_friend': friend_profile,
         'friends': friends,

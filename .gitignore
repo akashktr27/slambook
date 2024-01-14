@@ -166,3 +166,4 @@ Dockerfile
 sample.txt
 sample_binary_file.bin
 update.txt
+/venv/
