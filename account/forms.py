@@ -1,5 +1,5 @@
 from django import forms
-from .models import CustomUser
+from .models import CustomUser, Message
 from django.contrib.auth.forms import UserChangeForm
 
 class SignUpForm(forms.Form):
@@ -34,3 +34,9 @@ class CustomUserChangeForm(UserChangeForm):
     class Meta:
         model = CustomUser
         fields = ['email', 'first_name', 'last_name', 'date_of_birth', 'current_place', 'working_as', 'profile_picture', 'relationship_status', 'interested_in', 'gender']
+
+
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['content']
