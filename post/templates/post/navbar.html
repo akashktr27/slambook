@@ -32,7 +32,7 @@
             <a href="{% url 'account:profile' request.user.id %}" class="w3-left w3-margin-right">
                 <img src="{{ request.user.profile_picture.url }}" alt="Profile Image" class="w3-circle" style="width:40px; height:40px">
             </a>
-            <a href="{% url 'account:profile' request.user.id %}">{{ request.user.first_name }}</a>
+            <a href="{% url 'account:profile' request.user.id %}">...{{ request.user.first_name }}</a>
         </div>
 <!--obj.first_name-->
     </div>

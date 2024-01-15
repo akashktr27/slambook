@@ -48,19 +48,26 @@ def login_view(request):
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
-            print(email)
-            print(password)
             user = authenticate(request, email=email, password=password)
-            print(user)
+
             if user is not None:
                 login(request, user)
-                # Redirect to a success page or home page after successful login
-                print('Login success')
-                return redirect('post:home')
+                try:
+                    active_user = CustomUser.objects.get(email=email)
+                    if not active_user.is_active:
+                        return redirect('post:home')
+                    else:
+                        messages.error(request, 'Drop a mail to administrator to activate your ID at akashkantrikar@gmail.com')
+                        form = LoginForm()
+                        return render(request, 'account/login.html', {'form': form})
+                except:
+                    return render(request, 'account/login.html', {'form': form})
+
             else:
-                messages.error(request, 'Invalid email or password.')
+                messages.error(request, 'check email or password.   Drop a mail to administrator to activate your ID at akashkantrikar@gmail.com')
 
     else:
+        messages.success(request, 'there is problem logging in')
         form = LoginForm()
 
     return render(request, 'account/login.html', {'form': form})
@@ -145,7 +152,7 @@ def mark_asread(request):
 
     return JsonResponse({"status": "success"})
 
-
+@login_required
 def show_profile(request, user_id):
     print('ise', user_id)
     user = get_object_or_404(CustomUser, id=user_id)
@@ -168,7 +175,26 @@ def get_friends(request):
     }
     return render(request, "account/friends.html", context)
 
+@login_required
+def search_friend(request):
+    current_user = request.user
 
+    if request.method == 'GET':
+        print('q',request.GET.get('q'))
+        search_query = request.GET.get('q', '')
+        results = current_user.friends.filter(
+            Q(last_name__icontains=search_query) | Q(first_name__icontains=search_query))
+
+    results = [
+        {
+            'url': f'/account/chat/{friend.id}/',
+            'full_name': f'{friend.first_name} {friend.last_name}'
+        } for friend in results
+    ]
+    print(results)
+    return JsonResponse(results, safe=False)
+
+@login_required
 def send_message(request, friend_id):
     friend = get_user_model().objects.get(pk=friend_id)
 
@@ -205,7 +231,7 @@ def chat(request, friend_id=None):
     # acive chat
     if not friend_id:
         try:
-            friends = user_profile.friends.all().order_by('id')
+            friends = user_profile.friends.all().order_by('id')[:10]
         except:
             friends = []
         active_friend, messages, friend_profile = [], [], []

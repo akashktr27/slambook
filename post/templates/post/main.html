@@ -179,16 +179,19 @@
             </div>
             {% endif %}
         </div>
-          <div class="like">
-            <span id="likes-count">Likes: {{feed.likes.count}}</span>
-            <form action="{% url 'post:like_post' feed.id %}" method="POST" id="like-form">
-                {% csrf_token %}
-                <button type="submit" class="w3-button w3-theme-d1 w3-margin-bottom" id="like-button">
-                <i class="fa fa-thumbs-up"></i> Like
-                </button>
-            </form>
-                <button type="button" class="w3-button w3-theme-d2 w3-margin-bottom"><i class="fa fa-comment"></i>  Comment</button>
-            </div>
+<div class="like" style="display: flex; align-items: center;">
+    <span id="likes-count" style="margin-right: 10px;">{{feed.likes.count}} likes</span>
+    <form action="{% url 'post:like_post' feed.id %}" method="POST" id="like-form" style="margin-right: 10px;">
+        {% csrf_token %}
+        <button type="submit" class="w3-button w3-theme-d1" id="like-button">
+            <i class="fa fa-thumbs-up"></i> Like
+        </button>
+    </form>
+    <button type="button" class="w3-button w3-theme-d2"><i class="fa fa-comment"></i> Comment</button>
+</div>
+
+
+
           </div>
       {% endfor %}
 
@@ -211,6 +214,8 @@
 		</span>
 	</div>
 	</div>
+
+
 
     <!-- End Middle Column -->
     </div>
