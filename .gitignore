@@ -167,3 +167,6 @@ sample.txt
 sample_binary_file.bin
 update.txt
 /venv/
+/account/__pycache__/
+/post/__pycache__/
+/slambook/__pycache__/
