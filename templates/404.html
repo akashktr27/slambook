@@ -1,0 +1,14 @@
+{% extends 'account/base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+
+<h1>404</h1>
+
+<p>Page you are looking for may not exist or under construction</p>
+
+<a class="secondary" href="{% url 'account:login' %}">Home</a>
+
+{% endblock %}

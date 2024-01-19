@@ -11,7 +11,15 @@
               <img src="{{friend.profile_picture.url}}" class="card-img-top" alt="..." style="width: 200px; height:200px">
               <div class="card-body">
                 <h5 class="card-title">{{friend.first_name}} {{friend.last_name}}</h5>
-                <a href="#" class="btn btn-primary">Check Profile</a>
+                <div class="row">
+                  <div class="col-md-4">
+                    <a href="#" class="btn btn-primary">Profile</a>
+                  </div>
+                  <div class="col-md-4">
+                    <a href="{% url 'account:chat' friend.id %}" class="btn btn-primary">Message</a>
+                  </div>
+</div>
+
               </div>
             </div>
 
