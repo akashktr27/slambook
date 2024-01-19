@@ -29,8 +29,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     ]
 
     email = models.EmailField(unique=True)
-    first_name = models.CharField(max_length=30, blank=True)
-    last_name = models.CharField(max_length=30, blank=True)
+    first_name = models.CharField(max_length=30)
+    last_name = models.CharField(max_length=30)
     date_of_birth = models.DateField(blank=True, null=True)
     current_place = models.CharField(max_length=30, blank=True)
     working_as = models.CharField(max_length=30, blank=True)

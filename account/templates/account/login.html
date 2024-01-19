@@ -26,13 +26,17 @@
           <form method="post" action="{% url 'account:login' %}">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Login</button>
+            <button type="submit" class="btn btn-primary">Login</button>
           </form>
         </div>
-        <br>
-    <a href="{% url 'account:singup' %}">
-        <button type="button">SignUp</button>
-    </a>
+
     </div>
 </div>
+
+<br>
+<hr>
+<p>Want to create a free account...</p>
+<a href="{% url 'account:singup' %}">
+    <button type="submit" class="btn btn-primary">SignUp</button>
+</a>
 {% endblock %}

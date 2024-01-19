@@ -17,30 +17,36 @@ from django.contrib.auth import get_user_model
 class SignUpView(TemplateView):
     template_name = 'account/signup.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            # Redirect authenticated users to another page (e.g., profile page)
+            return redirect('post:home')
+        return super().dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['custom_data'] = 'This is custom data!'
-
         return context
 
     def get(self, request, *args, **kwargs):
         # Handle GET requests here
-        user = request
-
         return render(request, self.template_name, self.get_context_data())
 
     def post(self, request, *args, **kwargs):
         # Handle POST requests here
-        # You can access form data using request.POST
-
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, 'Account created successfully. Please log in.')
             return redirect('account:login')
-
         else:
-            return self.get(request)
+            # Display form errors
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"Error in {field}: {error}")
 
+            # Pass form and custom data to the template
+            return render(request, self.template_name, {'form': form, **self.get_context_data()})
 
 def login_view(request):
     if request.method == 'POST':
@@ -49,12 +55,11 @@ def login_view(request):
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             user = authenticate(request, email=email, password=password)
-
             if user is not None:
                 login(request, user)
                 try:
                     active_user = CustomUser.objects.get(email=email)
-                    if not active_user.is_active:
+                    if active_user.is_active:
                         return redirect('post:home')
                     else:
                         messages.error(request, 'Drop a mail to administrator to activate your ID at akashkantrikar@gmail.com')
@@ -67,18 +72,20 @@ def login_view(request):
                 messages.error(request, 'check email or password.   Drop a mail to administrator to activate your ID at akashkantrikar@gmail.com')
 
     else:
-        messages.success(request, 'there is problem logging in')
         form = LoginForm()
+    if request.user.is_authenticated:
+        return redirect('post:home')
 
     return render(request, 'account/login.html', {'form': form})
 
+@login_required
 def logout_view(request):
     # Logout the user
     logout(request)
     # Redirect to a specific page after logout
     return redirect(reverse('account:login'))
 
-
+@login_required(login_url='/account/login/')
 def send_friend_request(request, to_username):
     from_user = request.user
     to_user = get_object_or_404(CustomUser, email=to_username)
@@ -97,7 +104,7 @@ def send_friend_request(request, to_username):
     # Redirect to a page indicating that the friend request has been sent
     return redirect('post:home')
 
-
+@login_required(login_url='/account/login/')
 def friend_request_list(request):
     current_user = request.user
     received_requests = FriendRequest.objects.filter(to_user=current_user, is_accepted=False)
@@ -106,7 +113,7 @@ def friend_request_list(request):
     return render(request, 'friend_request_list.html',
                   {'received_requests': received_requests, 'sent_requests': sent_requests})
 
-
+@login_required(login_url='/account/login/')
 def accept_friend_request(request, request_id):
     friend_request = get_object_or_404(FriendRequest, id=request_id, to_user=request.user, is_accepted=False)
 
@@ -123,7 +130,7 @@ def accept_friend_request(request, request_id):
 
     return JsonResponse({"status": "request accepted"})
 
-
+@login_required(login_url='/account/login/')
 def profile(request, user_id):
     # User = get_user_model()
     user = get_object_or_404(CustomUser, id=user_id)
@@ -137,6 +144,7 @@ def profile(request, user_id):
 
     return render(request, 'account/profile.html', {'user': user, 'form': form})
 
+@login_required(login_url='/account/login/')
 def notifications(request):
     post_likes = Notification.objects.filter(user=request.user, notification_type='post_like', is_viewed=False)
     frnd_requests = FriendRequest.objects.filter(to_user=request.user, is_accepted=False)
@@ -147,12 +155,13 @@ def notifications(request):
     # unread_notifications.update(is_viewed=True)
     return render(request, 'account/notification.html', context)
 
+@login_required(login_url='/account/login/')
 def mark_asread(request):
     Notification.objects.filter(user=request.user).update(is_viewed=True)
 
     return JsonResponse({"status": "success"})
 
-@login_required
+@login_required(login_url='/account/login/')
 def show_profile(request, user_id):
     print('ise', user_id)
     user = get_object_or_404(CustomUser, id=user_id)
@@ -165,7 +174,7 @@ def show_profile(request, user_id):
     return render(request, 'account/show_profile.html', context)
 
 
-@login_required
+@login_required(login_url='/account/login/')
 def get_friends(request):
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
     friends = user_profile.friends.all()
@@ -175,7 +184,7 @@ def get_friends(request):
     }
     return render(request, "account/friends.html", context)
 
-@login_required
+@login_required(login_url='/account/login/')
 def search_friend(request):
     current_user = request.user
 
@@ -194,7 +203,7 @@ def search_friend(request):
     print(results)
     return JsonResponse(results, safe=False)
 
-@login_required
+@login_required(login_url='/account/login/')
 def send_message(request, friend_id):
     friend = get_user_model().objects.get(pk=friend_id)
 
@@ -212,6 +221,7 @@ def send_message(request, friend_id):
 
     return redirect('account:chat', friend_id=friend.id)
 
+@login_required(login_url='/account/login/')
 def conversation_history(request, friend_id):
     friend = get_user_model().objects.get(pk=friend_id)
     from django.contrib.auth import models
@@ -225,6 +235,7 @@ def conversation_history(request, friend_id):
     }
     return render(request, 'conversation_history.html', context)
 
+@login_required(login_url='/account/login/')
 def chat(request, friend_id=None):
     user_profile = get_object_or_404(CustomUser, id=request.user.id)
 

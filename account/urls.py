@@ -17,7 +17,6 @@ urlpatterns = [
     path('mark_asread/', mark_asread, name='mark_asread'),
     path('get_friends/', get_friends, name='get_friends'),
     path('chat_all/', chat, name='chat_all'),
-
     path('chat/<int:friend_id>/', chat, name='chat'),
     path('send_message/<int:friend_id>/', send_message, name='send_message'),
     path('conversation_history/<int:friend_id>/', conversation_history, name='conversation_history'),
