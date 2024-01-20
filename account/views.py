@@ -141,7 +141,7 @@ def profile(request, user_id):
             form.save()
     else:
         form = CustomUserChangeForm(instance=user)
-
+        # print(form.email.value)
     return render(request, 'account/profile.html', {'user': user, 'form': form})
 
 @login_required(login_url='/account/login/')

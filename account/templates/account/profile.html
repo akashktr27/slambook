@@ -5,23 +5,87 @@
 
 
 <div class="container mt-5">
-    <h1>{{ user.first_name }}'s Profile</h1>
+
 
     <div class="row">
-      <div class="col-md-4">
-        <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid">
-      </div>
-      <div class="col-md-8">
-        <form method="post" enctype="multipart/form-data">
+
+        <div class="col-md-4">
+            <h1>{{ user.first_name }}'s Profile</h1>
+            <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="img-fluid">
+        </div>
+
+
           {% csrf_token %}
-          {{ form}}
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="id_email" class="form-label">Email:</label>
+                    <input type="email" name="email" value="{{form.email.value}}" class="form-control" id="id_email" maxlength="254" required>
+                </div>
 
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-        </form>
-      </div>
+                <div class="mb-3">
+                    <label for="id_first_name" class="form-label">First name:</label>
+                    <input type="text" name="first_name" value="{{form.first_name.value}}" class="form-control" id="id_first_name" maxlength="30" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_last_name" class="form-label">Last name:</label>
+                    <input type="text" name="last_name" value="{{form.last_name.value}}" class="form-control" id="id_last_name" maxlength="30" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_date_of_birth" class="form-label">Date of birth:</label>
+                    <input type="date" name="date_of_birth" class="form-control" id="id_date_of_birth" value="{{form.date_of_birth.value}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_current_place" class="form-label">Current place:</label>
+                    <input type="text" name="current_place" class="form-control" id="id_current_place" maxlength="30" value="{{form.current_place.value}}">
+                </div>
+                </div>
+                <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="id_working_as" class="form-label">Working as:</label>
+                    <input type="text" name="working_as" class="form-control" id="id_working_as" maxlength="30" value="{{form.working_as.value}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_profile_picture" class="form-label">Profile picture:</label>
+                    <div class="mt-2">
+                        <input type="file" name="profile_picture" accept="image/*" class="form-control" id="id_profile_picture">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_relationship_status" class="form-label">Relationship status:</label>
+                    <input type="text" name="relationship_status" class="form-control" id="id_relationship_status" maxlength="30" value="{{form.relationship_status.value}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_interested_in" class="form-label">Interested in:</label>
+                    <input type="text" name="interested_in" class="form-control" id="id_interested_in" maxlength="30" value="{{form.interested_in.value}}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="id_gender" class="form-label">Gender:</label>
+                    <select name="gender" class="form-select" id="id_gender">
+                        <option value="{{form.gender.value}}" selected>---------</option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+
     </div>
-
+</div>
     <!-- Add a link back to the list of users or any other page as needed -->
-  </div>
+
+
 
 {% endblock %}

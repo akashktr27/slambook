@@ -37,11 +37,8 @@ $(document).ready(function () {
     });
 });
 
-console.log('hi');
 
-
-
-console.log("nase.js")
+console.log("base.js")
 
 function searchFriends() {
     var mysearch = $('#mysearch').val();
