@@ -170,3 +170,8 @@ update.txt
 /account/__pycache__/
 /post/__pycache__/
 /slambook/__pycache__/
+
+/account/__pycache__/
+/static/
+url_data.txt
+userdata.txt
