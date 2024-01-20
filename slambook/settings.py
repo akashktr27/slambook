@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-zt-__u#s66x@li=4r&gb6+%n&50_$^@xnkglzy7i(@xo%e&7nb
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["deployapi.pythonanywhere.com", ]
+ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [

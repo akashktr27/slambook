@@ -1,0 +1,11 @@
+home: http://localhost:8000/
+login: http://localhost:8000/account/login
+signup: http://localhost:8000/account/signup/
+get_friends: http://localhost:8000/account/get_friends/ --?
+chats: http://localhost:8000/account/chat_all/
+chat one: http://localhost:8000/account/chat/1/
+notification: http://localhost:8000/account/notification/
+search: http://localhost:8000/search
+own_profile: http://localhost:8000/account/profile/1/
+own_photos: http://localhost:8000/account/show_profile/1/
+
