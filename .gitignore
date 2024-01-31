@@ -177,3 +177,4 @@ url_data.txt
 userdata.txt
 /static/images/post_images/
 /static/images/profile_pictures/
+.env
